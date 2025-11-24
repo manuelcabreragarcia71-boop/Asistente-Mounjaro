@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manuel Mounjaro Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .header-links {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .tiktok-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .tiktok-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+            overflow-x: auto;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 12px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: none;
+        }
+
+        .content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* CHAT CONTENT */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            word-wrap: break-word;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bot-message {
+            background: #f0f0f0;
+            align-self: flex-start;
+            color: #333;
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-group button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+
+        .input-group button:hover {
+            transform: scale(1.1);
+        }
+
+        /* DOSIS CONTENT */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .historial {
+            margin-top: 20px;
+        }
+
+        .historial h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .record {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid #667eea;
+            font-size: 13px;
+        }
+
+        .record-title {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .record-date {
+            color: #999;
+            font-size: 12px;
+        }
+
+        /* PROGRESO CONTENT */
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .info-box {
+            background: #f0f0f0;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* MOTIVACION CONTENT */
+        .motivacion-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .quote {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quote-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .next-quote-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .next-quote-btn:hover {
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tips {
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .tips h4 {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .tip-item {
+            margin-bottom: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .disclaimer {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+            margin-top: 12px;
+        }
+
+        .footer-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        @media (max-width: 600px) {
+            .message {
+                max-width: 90%;
+            }
+
+            .tab {
+                font-size: 11px;
+            }
+
+            .stat-card {
+                padding: 12px;
+            }
+
+            .stat-value {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>🤖 Manuel Mounjaro Bot</h1>
+            <p>Tu asistente de salud, nutrición y motivación</p>
+            <div class="header-links">
+                <a href="https://www.tiktok.com/@manuel.mounjaro" target="_blank" class="tiktok-btn">🎵 TikTok: @manuel.mounjaro</a>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab(0)">💬 Chat</button>
+            <button class="tab" onclick="switchTab(1)">💉 Dosis</button>
+            <button class="tab" onclick="switchTab(2)">📈 Progreso</button>
+            <button class="tab" onclick="switchTab(3)">❤️ Motivación</button>
+        </div>
+
+        <!-- CONTENIDO -->
+
+        <!-- TAB 1: CHAT -->
+        <div class="content active">
+            <div class="chat-container">
+                <div class="messages" id="messagesContainer">
+                    <div class="message bot-message">
+                        ¡Hola! 👋 Soy tu asistente de salud y motivación. Puedo ayudarte con dudas sobre Mounjaro, nutrición, pérdida de peso y motivación. ¿Qué necesitas hoy?
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." onkeypress="handleEnter(event)">
+                    <button onclick="sendMessage()">➤</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: DOSIS -->
+        <div class="content">
+            <div class="form-group">
+                <label>Dosis (mg)</label>
+                <input type="number" id="dosisInput" placeholder="Ej: 2.5" step="0.5" min="0">
+            </div>
+            <div class="form-group">
+                <label>Peso (kg)</label>
+                <input type="number" id="pesoInput" placeholder="Ej: 75" step="0.1" min="0">
+            </div>
+            <button class="btn" onclick="registrarDosis()">Registrar Dosis</button>
+
+            <div class="historial">
+                <h3>📋 Historial de Dosis</h3>
+                <div id="dosisHistorial"></div>
+            </div>
+        </div>
+
+        <!-- TAB 3: PROGRESO -->
+        <div class="content">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-label">Semanas de Tratamiento</div>
+                    <div class="stat-value" id="semanasCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Registros de Peso</div>
+                    <div class="stat-value" id="registrosCount">0</div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>📊 Estadísticas</strong><br>
+                • Adhérencia: <span id="adherencia">0%</span><br>
+                • Registros realizados: <span id="registrosRealizados">0</span><br>
+                • Última actualización: <span id="ultimaActualizacion">-</span>
+            </div>
+
+            <div class="info-box" style="margin-top: 12px;">
+                <strong>✨ Consejos para tu progreso:</strong><br>
+                • Registra tu peso 1-2 veces por semana<br>
+                • Mantén consistencia con las dosis<br>
+                • Sigue una nutrición equilibrada<br>
+                • Duerme 7-8 horas diarias<br>
+                • Realiza ejercicio regularmente
+            </div>
+        </div>
+
+        <!-- TAB 4: MOTIVACIÓN -->
+        <div class="content">
+            <div class="motivacion-container">
+                <div class="quote">
+                    <div>
+                        <div class="quote-icon">💪</div>
+                        <div id="quoteText">¡Tú puedes! Cada día es una nueva oportunidad para brillar.</div>
+                    </div>
+                </div>
+                <button class="next-quote-btn" onclick="nextQuote()">Siguiente Frase 🎯</button>
+
+                <div class="tips">
+                    <h4>💡 Tips de Motivación</h4>
+                    <div class="tip-item">📝 Escribe tu objetivo en un papel y léelo cada mañana</div>
+                    <div class="tip-item">📸 Toma fotos de tu progreso cada semana</div>
+                    <div class="tip-item">👥 Busca un grupo de apoyo o comunidad</div>
+                    <div class="tip-item">🎵 Crea una playlist motivacional</div>
+                    <div class="tip-item">😴 Duerme bien, es fundamental para el éxito</div>
+                </div>
+
+                <div class="disclaimer">
+                    ⚠️ Este bot es tu compañero, no un sustituto de profesionales médicos. Siempre consulta a tu médico.
+                </div>
+
+                <div class="footer">
+                    <p>Creado por <strong>manuel.mounjaro</strong></p>
+                    <p>Sígueme en <a href="https://www.tiktok.com/@manuel.mounjaro" target="_blank" class="footer-link">TikTok: @manuel.mounjaro</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de respuestas del bot
+        const responses = {
+            'mounjaro': 'Mounjaro (tirzepatida) es un medicamento inyectable semanal que ayuda a controlar el peso y la glucosa. Se administra bajo supervisión médica. Algunos efectos secundarios comunes incluyen náuseas, vómitos y cambios digestivos. IMPORTANTE: Siempre consulta a tu médico antes de hacer cambios en tu tratamiento.',
+            'dosis': 'Las dosis de Mounjaro generalmente comienzan en 2.5 mg y pueden aumentar cada semana según tolerancia. La dosis máxima es 15 mg semanal. Solo tu médico debe ajustar las dosis. Nunca modifiques la dosis sin supervisión profesional.',
+            'efectos': 'Los efectos secundarios comunes incluyen: náuseas, vómitos, diarrea, estreñimiento, pérdida de apetito. Estos suelen mejorar con el tiempo. Si experimentas efectos graves, contacta inmediatamente a tu médico.',
+            'nutricion': 'Para una buena nutrición con Mounjaro: come proteína magra (pollo, pescado), verduras frescas, frutas, grasas saludables. Evita ultraprocesados y azúcares. Bebe 2-3 litros de agua diaria. Mantén comidas pequeñas y frecuentes.',
+            'dieta': 'Ejemplo de menú semanal:\n• Desayuno: yogur natural + granola + fruta\n• Almuerzo: pechuga pollo a la plancha + ensalada + arroz integral\n• Merienda: fruta o frutos secos\n• Cena: pescado al horno + verduras\n¿Quieres sugerencias más específicas?',
+            'peso': 'Para perder peso de forma saludable: déficit calórico moderado (500 calorías/día), ejercicio regular (30 min/día), hidratación constante, dormir 7-8 horas. Con Mounjaro, la pérdida suele ser más rápida. Paciencia y consistencia son clave.',
+            'ejercicio': 'Ejercicio recomendado: caminar 30-45 min/día, natación, yoga, pilates, gimnasio suave. Comienza lento y aumenta gradualmente. Consulta a tu médico antes de iniciar rutina intensa con Mounjaro.',
+            'motivacion': 'Recuerda por qué empezaste. Cada día es una nueva oportunidad. No se trata de perfección, sino de constancia. ¡Tú puedes! 💪 Pequeños avances son grandes logros.',
+            'desanimo': 'Es normal sentir desánimo. Visualiza tu objetivo, reconoce los avances logrados, celebra pequeñas victorias. Si persiste la tristeza, busca apoyo psicológico profesional.',
+            'hambre': 'El hambre con Mounjaro suele disminuir. Si sientes mucho hambre: toma agua, come despacio, mastica bien, elige alimentos con fibra. Si persiste, consulta a tu médico.',
+            'seguimiento': 'Para seguimiento efectivo: registra dosis cada semana, peso 1-2 veces por semana, cómo te sientes. Mantén contacto con tu médico. Usa la sección "Dosis" de esta app.'
+        };
+
+        const quotes = [
+            '¡Tú puedes! Cada día es una nueva oportunidad para brillar. 💪',
+            'No se trata de ser perfecto, se trata de ser consistente. 🎯',
+            'Tu cuerpo no es el enemigo, es tu aliado. Trátalo con amor. ❤️',
+            'Pequeños pasos hoy, grandes cambios mañana. 👣',
+            'No abandones lo que empezaste. ¡Ya estás cerca! 🏆',
+            'Tu salud es tu riqueza. ¡Invierte en ti! 💎',
+            'La paciencia es la clave del éxito. ⏰',
+            'Cada kilo perdido es una victoria. Celebra cada logro. 🎉',
+            'Eres más fuerte de lo que crees. 💥',
+            'Visualiza tu éxito y trabaja hacia él. 🌟'
+        ];
+
+        let currentQuoteIndex = 0;
+        let dosisRecords = JSON.parse(localStorage.getItem('dosisRecords')) || [];
+
+        // CHAT
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messagesContainer = document.getElementById('messagesContainer');
+
+            // Mostrar mensaje del usuario
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user-message';
+            userDiv.textContent = message;
+            messagesContainer.appendChild(userDiv);
+
+            // Obtener respuesta del bot
+            setTimeout(() => {
+                const response = getBotResponse(message);
+                const botDiv = document.createElement('div');
+                botDiv.className = 'message bot-message';
+                botDiv.textContent = response;
+                messagesContainer.appendChild(botDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 500);
+
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function getBotResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            for (let key in responses) {
+                if (lowerMessage.includes(key)) {
+                    return responses[key];
+                }
+            }
+            return 'Entiendo tu pregunta, pero necesito más claridad. ¿Me preguntas sobre Mounjaro, nutrición, ejercicio, motivación o cómo registrar tu progreso?';
+        }
+
+        // DOSIS
+        function registrarDosis() {
+            const dosis = document.getElementById('dosisInput').value;
+            const peso = document.getElementById('pesoInput').value;
+
+            if (!dosis || !peso) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+
+            const fecha = new Date().toLocaleDateString('es-ES');
+            dosisRecords.push({ dosis, peso, fecha });
+            localStorage.setItem('dosisRecords', JSON.stringify(dosisRecords));
+
+            document.getElementById('dosisInput').value = '';
+            document.getElementById('pesoInput').value = '';
+
+            actualizarHistorial();
+            actualizarProgreso();
+
+            alert('✅ Dosis registrada correctamente');
+        }
+
+        function actualizarHistorial() {
+            const historialDiv = document.getElementById('dosisHistorial');
+            historialDiv.innerHTML = '';
+
+            if (dosisRecords.length === 0) {
+                historialDiv.innerHTML = '<p style="color: #999; font-size: 13px;">No hay registros aún.</p>';
+                return;
+            }
+
+            dosisRecords.slice().reverse().forEach(record => {
+                const recordDiv = document.createElement('div');
+                recordDiv.className = 'record';
+                recordDiv.innerHTML = `
+                    <div class="record-title">✅ ${record.dosis} mg - ${record.peso} kg</div>
+                    <div class="record-date">${record.fecha}</div>
+                `;
+                historialDiv.appendChild(recordDiv);
+            });
+        }
+
+        // PROGRESO
+        function actualizarProgreso() {
+            const registrosCount = dosisRecords.length;
+            document.getElementById('registrosCount').textContent = registrosCount;
+            document.getElementById('registrosRealizados').textContent = registrosCount;
+
+            const semanasCount = Math.ceil(registrosCount / 1);
+            document.getElementById('semanasCount').textContent = semanasCount;
+
+            const adherencia = registrosCount > 0 ? '100%' : '0%';
+            document.getElementById('adherencia').textContent = adherencia;
+
+            const ultimaFecha = dosisRecords.length > 0 ? dosisRecords[dosisRecords.length - 1].fecha : '-';
+            document.getElementById('ultimaActualizacion').textContent = ultimaFecha;
+        }
+
+        // MOTIVACIÓN
+        function nextQuote() {
+            currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+            document.getElementById('quoteText').textContent = quotes[currentQuoteIndex];
+        }
+
+        // TABS
+        function switchTab(index) {
+            const contents = document.querySelectorAll('.content');
+            const tabs = document.querySelectorAll('.tab');
+
+            contents.forEach(c => c.classList.remove('active'));
+            tabs.forEach(t => t.classList.remove('active'));
+
+            contents[index].classList.add('active');
+            tabs[index].classList.add('active');
+
+            if (index === 2) {
+                actualizarProgreso();
+            }
+            if (index === 1) {
+                actualizarHistorial();
+            }
+        }
+
+        // INICIALIZAR
+        window.addEventListener('load', () => {
+            actualizarHistorial();
+            actualizarProgreso();
+        });
+    </script>
+</body>
+</html>
